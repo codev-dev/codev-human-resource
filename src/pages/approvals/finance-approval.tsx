@@ -15,9 +15,6 @@ import type { IncreaseRequest, Employee, Evaluation } from '@/types';
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -43,7 +40,6 @@ import {
   XCircle,
   FileText,
   Inbox,
-  Calendar,
   Percent,
   TrendingUp,
 } from 'lucide-react';

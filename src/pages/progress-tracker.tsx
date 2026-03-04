@@ -16,14 +16,11 @@ import {
   ProgressStepper,
   STAGE_LABELS,
 } from '@/components/increase/progress-stepper';
-import type { IncreaseRequest, IncreaseStage } from '@/types';
+import type { IncreaseStage } from '@/types';
 
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {

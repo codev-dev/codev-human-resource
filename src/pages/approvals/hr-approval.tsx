@@ -561,11 +561,11 @@ export function HRApprovalPage() {
                                 className="text-muted-foreground"
                               />
                               <Tooltip
-                                formatter={(val: number) => [
-                                  `$${val.toLocaleString()}`,
+                                formatter={(val: number | undefined) => [
+                                  `$${(val ?? 0).toLocaleString()}`,
                                   'Salary',
                                 ]}
-                                labelFormatter={(label: string) =>
+                                labelFormatter={(label: any) =>
                                   new Date(label).toLocaleDateString()
                                 }
                               />

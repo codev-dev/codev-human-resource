@@ -268,7 +268,7 @@ async function generatePdf({
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    y = (doc as any).lastAutoTable?.finalY + 6 ?? y + 30;
+    y = (doc as any).lastAutoTable?.finalY + 6;
   }
 
   // ---- Summary Section ----

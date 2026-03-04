@@ -43,13 +43,10 @@ import { storage } from '@/lib/storage';
 import { useAuthStore } from '@/stores/auth-store';
 import { useNotificationStore } from '@/stores/notification-store';
 import type {
-  Evaluation,
-  Employee,
   EvalTemplate,
   EvalQuestion,
   EvalAnswer,
   EvalStatus,
-  User,
 } from '@/types';
 import {
   FileText,

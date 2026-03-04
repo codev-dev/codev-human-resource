@@ -16,7 +16,6 @@ import {
   User,
   Clock,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
 import { useNotificationStore } from '@/stores/notification-store';
 import { Badge } from '@/components/ui/badge';

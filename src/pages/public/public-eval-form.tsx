@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -9,10 +9,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { storage, initializeData } from '@/lib/storage';
-import type { EvalTemplate, EvalAnswer, PublicFormSubmission, EvalQuestion } from '@/types';
+import type { EvalAnswer, PublicFormSubmission, EvalQuestion } from '@/types';
 import {
   ClipboardList,
-  Star,
   CheckCircle2,
   AlertTriangle,
   Send,

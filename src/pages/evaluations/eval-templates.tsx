@@ -1,5 +1,5 @@
-import { useState, useCallback, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { useState, useCallback } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -29,7 +29,6 @@ import {
   ArrowDown,
   Save,
   PencilLine,
-  X,
   Star,
   Type,
   List,
@@ -981,7 +980,7 @@ function PreviewModal({ template, open, onClose }: { template: EvalTemplate; ope
               <div className="space-y-3">
                 {template.questions
                   .filter((q) => q.category === cat)
-                  .map((q, idx) => (
+                  .map((q, _idx) => (
                     <div key={q.id} className="rounded-md border p-3">
                       <p className="text-sm font-medium mb-2">{q.text}</p>
                       {q.type === 'rating' && (

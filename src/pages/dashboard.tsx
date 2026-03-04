@@ -20,7 +20,6 @@ import { useAuthStore } from '@/stores/auth-store';
 import { useNotificationStore } from '@/stores/notification-store';
 import { storage } from '@/lib/storage';
 import { ReadOnlyBanner } from '@/components/auth/read-only-banner';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import {

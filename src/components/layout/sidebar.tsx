@@ -7,7 +7,7 @@
 // On mobile viewports the sidebar renders as an overlay with a backdrop.
 // ============================================================================
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   ChevronLeft,
@@ -17,9 +17,7 @@ import {
   ClipboardCheck,
   FileText,
   TrendingUp,
-  ListChecks,
   CheckSquare,
-  ShieldCheck,
   Settings,
   UserCog,
   X,

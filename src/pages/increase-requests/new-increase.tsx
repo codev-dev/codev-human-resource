@@ -3,7 +3,7 @@
 // ============================================================================
 
 import { useState, useMemo } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,7 +16,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useAuthStore } from '@/stores/auth-store';
 import { storage } from '@/lib/storage';
@@ -55,7 +54,6 @@ function formatCurrency(amount: number): string {
 // ---------------------------------------------------------------------------
 
 export function NewIncreasePage() {
-  const navigate = useNavigate();
   const currentUser = useAuthStore((s) => s.currentUser);
 
   const employees = storage.getEmployees().filter((e) => e.status === 'active' || e.status === 'probation');

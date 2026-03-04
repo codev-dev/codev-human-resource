@@ -6,7 +6,7 @@
 // ============================================================================
 
 import { useState, useMemo, useCallback, useRef } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -43,7 +43,6 @@ import {
   ExternalLink,
   Lock,
   User,
-  ChevronRight,
   XCircle,
   CheckCircle2,
   Info,
@@ -123,7 +122,6 @@ function formatDateTime(dateStr: string): string {
 
 export function IncreaseDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const currentUser = useAuthStore((s) => s.currentUser);
   const addNotification = useNotificationStore((s) => s.addNotification);
 
@@ -647,7 +645,7 @@ export function IncreaseDetailPage() {
                         tickFormatter={(v: number) => `$${(v / 1000).toFixed(0)}k`}
                       />
                       <Tooltip
-                        formatter={(value: number) => [formatCurrency(value), 'Salary']}
+                        formatter={(value: number | undefined) => [formatCurrency(value ?? 0), 'Salary']}
                         contentStyle={{ borderRadius: 8, fontSize: 12 }}
                       />
                       <Line
@@ -780,7 +778,7 @@ interface ClientApprovalProps {
 }
 
 const ClientApprovalSection = forwardRef<HTMLDivElement, ClientApprovalProps>(
-  ({ request, employeeName, employee, canAct, onApprove, onReject, onAddNotes }, ref) => {
+  ({ request, employeeName, employee: _employee, canAct, onApprove, onReject, onAddNotes }, ref) => {
     const [rejectNotes, setRejectNotes] = useState('');
     const [contextNotes, setContextNotes] = useState(request.clientNotes ?? '');
     const [showRejectForm, setShowRejectForm] = useState(false);
