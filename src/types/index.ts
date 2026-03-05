@@ -227,3 +227,34 @@ export interface SalaryHistory {
   effectiveDate: string;
   requestId?: string;
 }
+
+// ---------------------------------------------------------------------------
+// eNPS (Employee Net Promoter Score)
+// ---------------------------------------------------------------------------
+
+export interface ENPSSurvey {
+  id: string;
+  name: string;
+  createdBy: string;
+  createdAt: string;
+  closedAt?: string;
+  status: 'active' | 'closed';
+}
+
+export interface ENPSInvite {
+  id: string;
+  surveyId: string;
+  employeeEmail: string;
+  linkId: string;
+  answered: boolean;
+  sentAt: string;
+  answeredAt?: string;
+}
+
+export interface ENPSResponse {
+  id: string;
+  surveyId: string;
+  score: number;
+  comment?: string;
+  submittedAt: string;
+}

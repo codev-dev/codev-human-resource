@@ -23,6 +23,7 @@ import {
   X,
   DollarSign,
   BarChart3,
+  SmilePlus,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
@@ -85,6 +86,24 @@ const NAV_GROUPS: NavGroup[] = [
         path: '/evaluations/templates',
         icon: <FileText className="size-4" />,
         allowedRoles: ['admin'],
+      },
+    ],
+  },
+  {
+    title: 'eNPS',
+    allowedRoles: ['admin', 'editor'],
+    items: [
+      {
+        label: 'eNPS Dashboard',
+        path: '/enps',
+        icon: <SmilePlus className="size-4" />,
+        allowedRoles: ['admin', 'editor'],
+      },
+      {
+        label: 'eNPS Surveys',
+        path: '/enps/surveys',
+        icon: <ClipboardCheck className="size-4" />,
+        allowedRoles: ['admin', 'editor'],
       },
     ],
   },
@@ -221,7 +240,7 @@ export function Sidebar({
                   <li key={item.path}>
                     <NavLink
                       to={item.path}
-                      end={item.path === '/employees' || item.path === '/evaluations' || item.path === '/increase-requests'}
+                      end={item.path === '/employees' || item.path === '/evaluations' || item.path === '/increase-requests' || item.path === '/enps'}
                       className={({ isActive }) =>
                         cn(
                           'group flex items-center gap-3 rounded-md px-2 py-2 text-sm font-medium transition-colors',

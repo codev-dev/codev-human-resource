@@ -15,6 +15,9 @@ import type {
   Notification,
   SalaryHistory,
   PublicFormSubmission,
+  ENPSSurvey,
+  ENPSInvite,
+  ENPSResponse,
 } from '@/types';
 
 import {
@@ -25,6 +28,9 @@ import {
   seedIncreaseRequests,
   seedNotifications,
   seedSalaryHistory,
+  seedENPSSurveys,
+  seedENPSInvites,
+  seedENPSResponses,
 } from '@/data/seed-data';
 
 // ---------------------------------------------------------------------------
@@ -40,6 +46,9 @@ const KEYS = {
   notifications: 'hcm_notifications',
   salaryHistory: 'hcm_salary_history',
   publicSubmissions: 'hcm_public_submissions',
+  enpsSurveys: 'hcm_enps_surveys',
+  enpsInvites: 'hcm_enps_invites',
+  enpsResponses: 'hcm_enps_responses',
 } as const;
 
 type StorageKey = (typeof KEYS)[keyof typeof KEYS];
@@ -118,6 +127,9 @@ export function initializeData(): void {
   seedIfMissing<IncreaseRequest>(KEYS.increaseRequests, seedIncreaseRequests);
   seedIfMissing<Notification>(KEYS.notifications, seedNotifications);
   seedIfMissing<SalaryHistory>(KEYS.salaryHistory, seedSalaryHistory);
+  seedIfMissing<ENPSSurvey>(KEYS.enpsSurveys, seedENPSSurveys);
+  seedIfMissing<ENPSInvite>(KEYS.enpsInvites, seedENPSInvites);
+  seedIfMissing<ENPSResponse>(KEYS.enpsResponses, seedENPSResponses);
 }
 
 /**
@@ -190,6 +202,26 @@ export const storage = {
   getPublicSubmission: (id: string) => getById<PublicFormSubmission>(KEYS.publicSubmissions, id),
   createPublicSubmission: (sub: PublicFormSubmission) => create(KEYS.publicSubmissions, sub),
   removePublicSubmission: (id: string) => remove(KEYS.publicSubmissions, id),
+
+  // eNPS Surveys
+  getENPSSurveys: () => getAll<ENPSSurvey>(KEYS.enpsSurveys),
+  getENPSSurvey: (id: string) => getById<ENPSSurvey>(KEYS.enpsSurveys, id),
+  createENPSSurvey: (s: ENPSSurvey) => create(KEYS.enpsSurveys, s),
+  updateENPSSurvey: (id: string, data: Partial<ENPSSurvey>) => update<ENPSSurvey>(KEYS.enpsSurveys, id, data),
+  removeENPSSurvey: (id: string) => remove(KEYS.enpsSurveys, id),
+
+  // eNPS Invites
+  getENPSInvites: () => getAll<ENPSInvite>(KEYS.enpsInvites),
+  getENPSInvite: (id: string) => getById<ENPSInvite>(KEYS.enpsInvites, id),
+  createENPSInvite: (inv: ENPSInvite) => create(KEYS.enpsInvites, inv),
+  updateENPSInvite: (id: string, data: Partial<ENPSInvite>) => update<ENPSInvite>(KEYS.enpsInvites, id, data),
+  removeENPSInvite: (id: string) => remove(KEYS.enpsInvites, id),
+
+  // eNPS Responses
+  getENPSResponses: () => getAll<ENPSResponse>(KEYS.enpsResponses),
+  getENPSResponse: (id: string) => getById<ENPSResponse>(KEYS.enpsResponses, id),
+  createENPSResponse: (r: ENPSResponse) => create(KEYS.enpsResponses, r),
+  removeENPSResponse: (id: string) => remove(KEYS.enpsResponses, id),
 } as const;
 
 export { KEYS };

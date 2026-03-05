@@ -6,6 +6,9 @@ import type {
   IncreaseRequest,
   Notification,
   SalaryHistory,
+  ENPSSurvey,
+  ENPSInvite,
+  ENPSResponse,
 } from '@/types';
 
 // ============================================================================
@@ -1453,4 +1456,77 @@ export const seedNotifications: Notification[] = [
     link: '/evaluations/eval-011',
     createdAt: '2026-02-16',
   },
+];
+
+// ============================================================================
+// eNPS Surveys
+// ============================================================================
+
+export const seedENPSSurveys: ENPSSurvey[] = [
+  {
+    id: 'enps-surv-001',
+    name: 'Q4 2025 eNPS',
+    createdBy: 'usr-001',
+    createdAt: '2025-10-01',
+    closedAt: '2025-12-31',
+    status: 'closed',
+  },
+  {
+    id: 'enps-surv-002',
+    name: 'Q1 2026 eNPS',
+    createdBy: 'usr-001',
+    createdAt: '2026-01-15',
+    status: 'active',
+  },
+];
+
+// ============================================================================
+// eNPS Invites
+// ============================================================================
+
+export const seedENPSInvites: ENPSInvite[] = [
+  // ---- Q4 2025 (closed, all answered) ----
+  { id: 'enps-inv-001', surveyId: 'enps-surv-001', employeeEmail: 'alex.reyes@opscorp.com', linkId: 'nps-q4-a1b2c3', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-05' },
+  { id: 'enps-inv-002', surveyId: 'enps-surv-001', employeeEmail: 'bea.villanueva@opscorp.com', linkId: 'nps-q4-d4e5f6', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-03' },
+  { id: 'enps-inv-003', surveyId: 'enps-surv-001', employeeEmail: 'chris.navarro@opscorp.com', linkId: 'nps-q4-g7h8i9', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-07' },
+  { id: 'enps-inv-004', surveyId: 'enps-surv-001', employeeEmail: 'diana.aquino@opscorp.com', linkId: 'nps-q4-j0k1l2', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-04' },
+  { id: 'enps-inv-005', surveyId: 'enps-surv-001', employeeEmail: 'ethan.garcia@opscorp.com', linkId: 'nps-q4-m3n4o5', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-06' },
+  { id: 'enps-inv-006', surveyId: 'enps-surv-001', employeeEmail: 'fiona.torres@opscorp.com', linkId: 'nps-q4-p6q7r8', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-08' },
+  { id: 'enps-inv-007', surveyId: 'enps-surv-001', employeeEmail: 'gabriel.ramos@opscorp.com', linkId: 'nps-q4-s9t0u1', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-05' },
+
+  // ---- Q1 2026 (active, mix of answered/unanswered) ----
+  { id: 'enps-inv-008', surveyId: 'enps-surv-002', employeeEmail: 'alex.reyes@opscorp.com', linkId: 'nps-q1-v2w3x4', answered: true, sentAt: '2026-01-16', answeredAt: '2026-01-18' },
+  { id: 'enps-inv-009', surveyId: 'enps-surv-002', employeeEmail: 'bea.villanueva@opscorp.com', linkId: 'nps-q1-y5z6a7', answered: true, sentAt: '2026-01-16', answeredAt: '2026-01-17' },
+  { id: 'enps-inv-010', surveyId: 'enps-surv-002', employeeEmail: 'chris.navarro@opscorp.com', linkId: 'nps-q1-b8c9d0', answered: true, sentAt: '2026-01-16', answeredAt: '2026-01-20' },
+  { id: 'enps-inv-011', surveyId: 'enps-surv-002', employeeEmail: 'diana.aquino@opscorp.com', linkId: 'nps-q1-e1f2g3', answered: true, sentAt: '2026-01-16', answeredAt: '2026-01-19' },
+  { id: 'enps-inv-012', surveyId: 'enps-surv-002', employeeEmail: 'ethan.garcia@opscorp.com', linkId: 'nps-q1-h4i5j6', answered: true, sentAt: '2026-01-16', answeredAt: '2026-01-22' },
+  { id: 'enps-inv-013', surveyId: 'enps-surv-002', employeeEmail: 'fiona.torres@opscorp.com', linkId: 'nps-q1-k7l8m9', answered: false, sentAt: '2026-01-16' },
+  { id: 'enps-inv-014', surveyId: 'enps-surv-002', employeeEmail: 'gabriel.ramos@opscorp.com', linkId: 'nps-q1-n0o1p2', answered: false, sentAt: '2026-01-16' },
+  { id: 'enps-inv-015', surveyId: 'enps-surv-002', employeeEmail: 'hannah.deleon@opscorp.com', linkId: 'nps-q1-q3r4s5', answered: false, sentAt: '2026-01-16' },
+  { id: 'enps-inv-016', surveyId: 'enps-surv-002', employeeEmail: 'ian.bautista@opscorp.com', linkId: 'nps-q1-t6u7v8', answered: false, sentAt: '2026-01-16' },
+  { id: 'enps-inv-017', surveyId: 'enps-surv-002', employeeEmail: 'julia.fernandez@opscorp.com', linkId: 'nps-q1-w9x0y1', answered: true, sentAt: '2026-01-16', answeredAt: '2026-01-21' },
+  { id: 'enps-inv-018', surveyId: 'enps-surv-002', employeeEmail: 'kevin.pascual@opscorp.com', linkId: 'nps-q1-z2a3b4', answered: false, sentAt: '2026-01-16' },
+];
+
+// ============================================================================
+// eNPS Responses (anonymous — no employee reference)
+// ============================================================================
+
+export const seedENPSResponses: ENPSResponse[] = [
+  // ---- Q4 2025 responses (7 total — matches 7 answered invites) ----
+  { id: 'enps-res-001', surveyId: 'enps-surv-001', score: 9, comment: 'Great team culture and supportive management.', submittedAt: '2025-10-05' },
+  { id: 'enps-res-002', surveyId: 'enps-surv-001', score: 10, comment: 'Best company I have worked for!', submittedAt: '2025-10-03' },
+  { id: 'enps-res-003', surveyId: 'enps-surv-001', score: 7, submittedAt: '2025-10-07' },
+  { id: 'enps-res-004', surveyId: 'enps-surv-001', score: 8, comment: 'Good benefits but could improve remote work policies.', submittedAt: '2025-10-04' },
+  { id: 'enps-res-005', surveyId: 'enps-surv-001', score: 5, comment: 'Workload can be overwhelming at times.', submittedAt: '2025-10-06' },
+  { id: 'enps-res-006', surveyId: 'enps-surv-001', score: 9, submittedAt: '2025-10-08' },
+  { id: 'enps-res-007', surveyId: 'enps-surv-001', score: 6, comment: 'Career growth paths are not clear enough.', submittedAt: '2025-10-05' },
+
+  // ---- Q1 2026 responses (6 total — matches 6 answered invites) ----
+  { id: 'enps-res-008', surveyId: 'enps-surv-002', score: 10, comment: 'The new leadership is doing an amazing job!', submittedAt: '2026-01-18' },
+  { id: 'enps-res-009', surveyId: 'enps-surv-002', score: 9, comment: 'Love the flexible work arrangements.', submittedAt: '2026-01-17' },
+  { id: 'enps-res-010', surveyId: 'enps-surv-002', score: 4, comment: 'Need better communication between departments.', submittedAt: '2026-01-20' },
+  { id: 'enps-res-011', surveyId: 'enps-surv-002', score: 8, submittedAt: '2026-01-19' },
+  { id: 'enps-res-012', surveyId: 'enps-surv-002', score: 9, comment: 'Excellent learning opportunities and mentorship.', submittedAt: '2026-01-22' },
+  { id: 'enps-res-013', surveyId: 'enps-surv-002', score: 7, comment: 'Decent workplace, but compensation could be more competitive.', submittedAt: '2026-01-21' },
 ];
