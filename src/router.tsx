@@ -45,8 +45,14 @@ import { ProgressTrackerPage } from '@/pages/progress-tracker';
 import { UserManagementPage } from '@/pages/admin/user-management';
 import { SettingsPage } from '@/pages/admin/settings';
 
+// -- eNPS ---------------------------------------------------------------------
+import { ENPSDashboardPage } from '@/pages/enps/enps-dashboard';
+import { ENPSSurveysPage } from '@/pages/enps/enps-surveys';
+import { ENPSSurveyDetailPage } from '@/pages/enps/enps-survey-detail';
+
 // -- Public pages (no auth) ---------------------------------------------------
 import { PublicEvalFormPage } from '@/pages/public/public-eval-form';
+import { PublicENPSFormPage } from '@/pages/public/public-enps-form';
 
 // -- Misc ---------------------------------------------------------------------
 import { UnauthorizedPage } from '@/pages/unauthorized';
@@ -69,6 +75,11 @@ export const router = createBrowserRouter([
   {
     path: '/public/eval/:linkId',
     element: <PublicEvalFormPage />,
+  },
+  // ---- Public eNPS survey (no auth required) ----
+  {
+    path: '/public/enps/:linkId',
+    element: <PublicENPSFormPage />,
   },
 
   // ---- Protected routes (inside layout) ----
@@ -129,6 +140,32 @@ export const router = createBrowserRouter([
         element: (
           <RouteGuard allowedRoles={['admin', 'editor']}>
             <EvalFormPage />
+          </RouteGuard>
+        ),
+      },
+
+      // eNPS
+      {
+        path: 'enps',
+        element: (
+          <RouteGuard allowedRoles={['admin', 'editor']}>
+            <ENPSDashboardPage />
+          </RouteGuard>
+        ),
+      },
+      {
+        path: 'enps/surveys',
+        element: (
+          <RouteGuard allowedRoles={['admin', 'editor']}>
+            <ENPSSurveysPage />
+          </RouteGuard>
+        ),
+      },
+      {
+        path: 'enps/surveys/:id',
+        element: (
+          <RouteGuard allowedRoles={['admin', 'editor']}>
+            <ENPSSurveyDetailPage />
           </RouteGuard>
         ),
       },
