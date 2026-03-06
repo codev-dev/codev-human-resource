@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { storage } from '@/lib/storage';
-import type { ENPSInvite, ENPSSurvey, ENPSResponse } from '@/types';
+import type { ENPSInvite, ENPSSurvey, ENPSResponse, Employee } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -174,11 +174,17 @@ export function PublicENPSFormPage() {
     setIsSubmitting(true);
 
     setTimeout(() => {
+      const employee = storage.getEmployees().find(
+        (e: Employee) => e.email === invite.employeeEmail,
+      );
+
       const response: ENPSResponse = {
         id: `enps-res-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
         surveyId: invite.surveyId,
         score: selectedScore,
         comment: comment.trim() || undefined,
+        department: employee?.department,
+        unit: employee?.unit,
         submittedAt: new Date().toISOString(),
       };
       storage.createENPSResponse(response);

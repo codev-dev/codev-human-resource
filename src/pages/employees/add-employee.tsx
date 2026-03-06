@@ -64,6 +64,16 @@ interface FormErrors {
 
 const DEPARTMENTS = ['Engineering', 'Design', 'Marketing', 'Finance', 'Operations', 'Human Resources', 'Client Services'];
 
+const DEPARTMENT_UNIT_MAP: Record<string, string> = {
+  Engineering: 'Technology',
+  Design: 'Technology',
+  Marketing: 'Business',
+  Finance: 'Business',
+  Operations: 'Business',
+  'Human Resources': 'Corporate',
+  'Client Services': 'Corporate',
+};
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -153,6 +163,7 @@ export function AddEmployeePage() {
           lastName: form.lastName.trim(),
           email: form.email.trim(),
           department: form.department,
+          unit: DEPARTMENT_UNIT_MAP[form.department] ?? 'Corporate',
           position: form.position.trim(),
           hireDate: form.hireDate,
           currentSalary: Number(form.currentSalary),

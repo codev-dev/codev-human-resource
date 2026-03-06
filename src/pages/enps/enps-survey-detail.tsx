@@ -15,8 +15,18 @@ import {
   BarChart3,
   XCircle,
   Bell,
+  Lock,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuthStore } from '@/stores/auth-store';
+import { useTablePagination, TablePagination } from '@/components/ui/table-pagination';
+
+// ---------------------------------------------------------------------------
+// Constants: Anti-identification thresholds
+// ---------------------------------------------------------------------------
+
+const MIN_RESPONSES = 5;
+const MIN_RESPONSE_RATE = 0.25;
 
 // ---------------------------------------------------------------------------
 // Helper: Calculate NPS from responses
@@ -87,6 +97,13 @@ export function ENPSSurveyDetailPage() {
     return map;
   }, []);
 
+  // Employee lookup by email (for department/unit display on invite rows)
+  const employeeByEmail = useMemo(() => {
+    const map = new Map<string, { department: string; unit: string }>();
+    storage.getEmployees().forEach((e) => map.set(e.email, { department: e.department, unit: e.unit }));
+    return map;
+  }, []);
+
   // Stats
   const stats = useMemo(() => {
     const totalInvited = invites.length;
@@ -114,6 +131,87 @@ export function ENPSSurveyDetailPage() {
     };
   }, [responses]);
 
+  // Auth for role-scoped filtering
+  const currentUser = useAuthStore((s) => s.currentUser);
+
+  // Department breakdown with threshold gating
+  const departmentBreakdown = useMemo(() => {
+    const employees = storage.getEmployees();
+
+    // Determine which departments the current user can see
+    let allowedDepartments: Set<string> | null = null; // null = all
+    if (currentUser?.role === 'editor') {
+      const supervised = employees.filter(
+        (e) => e.supervisorId === currentUser.id
+      );
+      allowedDepartments = new Set(supervised.map((e) => e.department));
+    }
+    // admin sees all; viewer should not reach this page but treat like admin
+
+    // Build a map of department -> emails (for calculating invited per dept)
+    const deptEmailsMap = new Map<string, Set<string>>();
+    for (const emp of employees) {
+      if (!deptEmailsMap.has(emp.department)) {
+        deptEmailsMap.set(emp.department, new Set());
+      }
+      deptEmailsMap.get(emp.department)!.add(emp.email);
+    }
+
+    // Group responses by department
+    const deptResponsesMap = new Map<string, ENPSResponse[]>();
+    for (const r of responses) {
+      if (!r.department) continue;
+      if (!deptResponsesMap.has(r.department)) {
+        deptResponsesMap.set(r.department, []);
+      }
+      deptResponsesMap.get(r.department)!.push(r);
+    }
+
+    // Collect all departments that appear in responses
+    const allDepts = Array.from(deptResponsesMap.keys()).sort();
+
+    return allDepts
+      .filter((dept) =>
+        allowedDepartments === null ? true : allowedDepartments.has(dept)
+      )
+      .map((dept) => {
+        const deptResponses = deptResponsesMap.get(dept) ?? [];
+        const deptEmails = deptEmailsMap.get(dept) ?? new Set<string>();
+
+        // Invited = invites whose email belongs to this department
+        const invitedCount = invites.filter((inv) =>
+          deptEmails.has(inv.employeeEmail)
+        ).length;
+
+        const responseCount = deptResponses.length;
+        const responseRate =
+          invitedCount > 0 ? responseCount / invitedCount : 0;
+
+        const meetsThreshold =
+          responseCount >= MIN_RESPONSES &&
+          responseRate >= MIN_RESPONSE_RATE;
+
+        const promoters = deptResponses.filter((r) => r.score >= 9).length;
+        const passives = deptResponses.filter(
+          (r) => r.score >= 7 && r.score <= 8
+        ).length;
+        const detractors = deptResponses.filter((r) => r.score <= 6).length;
+        const nps = calculateNPS(deptResponses);
+
+        return {
+          department: dept,
+          responseCount,
+          invitedCount,
+          responseRate,
+          meetsThreshold,
+          nps,
+          promoters,
+          passives,
+          detractors,
+        };
+      });
+  }, [responses, invites, currentUser]);
+
   // Show toast helper
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const showToast = useCallback((message: string) => {
@@ -121,6 +219,10 @@ export function ENPSSurveyDetailPage() {
     setToast(message);
     toastTimer.current = setTimeout(() => setToast(''), 3000);
   }, []);
+
+  // Pagination hooks
+  const deptPagination = useTablePagination(departmentBreakdown);
+  const invitePagination = useTablePagination(invites);
 
   // Copy link to clipboard
   const handleCopyLink = useCallback(
@@ -407,6 +509,120 @@ export function ENPSSurveyDetailPage() {
         </Card>
       )}
 
+      {/* eNPS by Department */}
+      {responses.length > 0 && departmentBreakdown.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="size-5 text-primary" />
+              eNPS by Department
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="max-h-[600px] overflow-x-auto overflow-y-auto rounded-md border">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b bg-muted/50 text-left">
+                    <th className="whitespace-nowrap px-4 py-3 font-medium">
+                      Department
+                    </th>
+                    <th className="whitespace-nowrap px-4 py-3 font-medium text-center">
+                      Responses
+                    </th>
+                    <th className="whitespace-nowrap px-4 py-3 font-medium text-center">
+                      eNPS Score
+                    </th>
+                    <th className="hidden whitespace-nowrap px-4 py-3 font-medium text-center sm:table-cell">
+                      Promoters
+                    </th>
+                    <th className="hidden whitespace-nowrap px-4 py-3 font-medium text-center sm:table-cell">
+                      Passives
+                    </th>
+                    <th className="hidden whitespace-nowrap px-4 py-3 font-medium text-center sm:table-cell">
+                      Detractors
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {deptPagination.paginatedData.map((row) => (
+                    <tr
+                      key={row.department}
+                      className="border-b transition-colors last:border-b-0 hover:bg-muted/30"
+                    >
+                      <td className="px-4 py-3 font-medium">
+                        {row.department}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        {row.responseCount}
+                      </td>
+                      {row.meetsThreshold ? (
+                        <>
+                          <td className="px-4 py-3 text-center">
+                            <Badge
+                              className={cn(
+                                row.nps > 0
+                                  ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'
+                                  : row.nps < 0
+                                    ? 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300'
+                                    : 'bg-gray-100 text-gray-700 dark:bg-gray-800/40 dark:text-gray-300'
+                              )}
+                            >
+                              {row.nps}
+                            </Badge>
+                          </td>
+                          <td className="hidden px-4 py-3 text-center text-green-600 dark:text-green-400 sm:table-cell">
+                            {row.promoters}
+                          </td>
+                          <td className="hidden px-4 py-3 text-center text-amber-600 dark:text-amber-400 sm:table-cell">
+                            {row.passives}
+                          </td>
+                          <td className="hidden px-4 py-3 text-center text-red-600 dark:text-red-400 sm:table-cell">
+                            {row.detractors}
+                          </td>
+                        </>
+                      ) : (
+                        <>
+                          <td className="px-4 py-3 text-center">
+                            <span
+                              className="inline-flex items-center gap-1 text-muted-foreground"
+                              title="Results hidden to protect anonymity (min 5 responses and 25% response rate required)"
+                            >
+                              <Lock className="size-3.5" />
+                              Hidden
+                            </span>
+                          </td>
+                          <td className="hidden px-4 py-3 text-center text-muted-foreground sm:table-cell">
+                            --
+                          </td>
+                          <td className="hidden px-4 py-3 text-center text-muted-foreground sm:table-cell">
+                            --
+                          </td>
+                          <td className="hidden px-4 py-3 text-center text-muted-foreground sm:table-cell">
+                            --
+                          </td>
+                        </>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <TablePagination
+              page={deptPagination.page}
+              totalPages={deptPagination.totalPages}
+              totalRows={deptPagination.totalRows}
+              pageSize={deptPagination.pageSize}
+              isShowingAll={deptPagination.isShowingAll}
+              onFirst={deptPagination.goFirst}
+              onPrev={deptPagination.goPrev}
+              onNext={deptPagination.goNext}
+              onLast={deptPagination.goLast}
+              onToggleShowAll={deptPagination.toggleShowAll}
+            />
+          </CardContent>
+        </Card>
+      )}
+
       {/* Bulk actions bar */}
       <div className="flex flex-wrap items-center gap-2">
         <Button variant="outline" size="sm" onClick={handleCopyAllPending}>
@@ -428,11 +644,13 @@ export function ENPSSurveyDetailPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto rounded-md border">
+          <div className="max-h-[600px] overflow-x-auto overflow-y-auto rounded-md border">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b bg-muted/50 text-left">
                   <th className="whitespace-nowrap px-4 py-3 font-medium">Employee Email</th>
+                  <th className="hidden whitespace-nowrap px-4 py-3 font-medium sm:table-cell">Department</th>
+                  <th className="hidden whitespace-nowrap px-4 py-3 font-medium lg:table-cell">Unit</th>
                   <th className="hidden whitespace-nowrap px-4 py-3 font-medium md:table-cell">
                     Survey Link
                   </th>
@@ -449,18 +667,30 @@ export function ENPSSurveyDetailPage() {
               <tbody>
                 {invites.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-4 py-12 text-center text-muted-foreground">
+                    <td colSpan={8} className="px-4 py-12 text-center text-muted-foreground">
                       No invites found for this survey.
                     </td>
                   </tr>
                 ) : (
-                  invites.map((invite) => (
+                  invitePagination.paginatedData.map((invite) => (
                     <tr
                       key={invite.id}
                       className="border-b transition-colors last:border-b-0 hover:bg-muted/30"
                     >
                       {/* Email */}
                       <td className="px-4 py-3 font-medium">{invite.employeeEmail}</td>
+
+                      {/* Department */}
+                      <td className="hidden px-4 py-3 text-muted-foreground sm:table-cell">
+                        {employeeByEmail.get(invite.employeeEmail)?.department ?? '--'}
+                      </td>
+
+                      {/* Unit */}
+                      <td className="hidden px-4 py-3 lg:table-cell">
+                        <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                          {employeeByEmail.get(invite.employeeEmail)?.unit ?? '--'}
+                        </Badge>
+                      </td>
 
                       {/* Survey Link */}
                       <td className="hidden px-4 py-3 md:table-cell">
@@ -521,6 +751,18 @@ export function ENPSSurveyDetailPage() {
               </tbody>
             </table>
           </div>
+          <TablePagination
+            page={invitePagination.page}
+            totalPages={invitePagination.totalPages}
+            totalRows={invitePagination.totalRows}
+            pageSize={invitePagination.pageSize}
+            isShowingAll={invitePagination.isShowingAll}
+            onFirst={invitePagination.goFirst}
+            onPrev={invitePagination.goPrev}
+            onNext={invitePagination.goNext}
+            onLast={invitePagination.goLast}
+            onToggleShowAll={invitePagination.toggleShowAll}
+          />
         </CardContent>
       </Card>
 

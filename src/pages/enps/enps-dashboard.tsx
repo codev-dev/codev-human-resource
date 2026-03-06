@@ -5,6 +5,7 @@
 import { useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { storage } from '@/lib/storage';
+import { useAuthStore } from '@/stores/auth-store';
 import type { ENPSResponse } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -15,8 +16,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { BarChart3, Users, TrendingUp, Send, MessageSquare, Filter } from 'lucide-react';
+import { BarChart3, Users, TrendingUp, Send, MessageSquare, Filter, Lock, Building2, Layers } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTablePagination, TablePagination } from '@/components/ui/table-pagination';
 import {
   LineChart,
   Line,
@@ -35,10 +37,16 @@ import {
 } from 'recharts';
 
 // ---------------------------------------------------------------------------
-// Helpers
+// Constants
 // ---------------------------------------------------------------------------
 
 const ALL_SURVEYS = '__all__';
+const MIN_RESPONSES = 5;
+const MIN_RESPONSE_RATE = 0.25; // 25%
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
 function calculateNPS(responses: ENPSResponse[]): number {
   if (responses.length === 0) return 0;
@@ -76,6 +84,24 @@ function getBarColor(score: number): string {
 }
 
 // ---------------------------------------------------------------------------
+// Group aggregation types
+// ---------------------------------------------------------------------------
+
+interface GroupMetrics {
+  groupName: string;
+  nps: number;
+  promoters: number;
+  passives: number;
+  detractors: number;
+  totalResponses: number;
+  totalInvited: number;
+  responseRate: number;
+  belowThreshold: boolean;
+}
+
+type GroupView = 'department' | 'unit';
+
+// ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
@@ -83,13 +109,17 @@ export function ENPSDashboardPage() {
   const location = useLocation();
   const [_tick] = useState(() => Date.now());
   const [selectedSurveyId, setSelectedSurveyId] = useState<string>(ALL_SURVEYS);
+  const [groupView, setGroupView] = useState<GroupView>('department');
+
+  const currentUser = useAuthStore((s) => s.currentUser);
 
   // ---- Load all data ----
-  const { surveys, allInvites, allResponses } = useMemo(
+  const { surveys, allInvites, allResponses, employees } = useMemo(
     () => ({
       surveys: storage.getENPSSurveys(),
       allInvites: storage.getENPSInvites(),
       allResponses: storage.getENPSResponses(),
+      employees: storage.getEmployees(),
     }),
     [location.key, _tick],
   );
@@ -119,6 +149,36 @@ export function ENPSDashboardPage() {
   const selectedSurvey = isFiltered
     ? surveys.find((s) => s.id === selectedSurveyId)
     : undefined;
+
+  // ---- Role-scoped departments/units for editors ----
+  const supervisedDepts = useMemo(() => {
+    if (!currentUser || currentUser.role === 'admin') return null; // null = show all
+    if (currentUser.role === 'editor') {
+      return [
+        ...new Set(
+          employees
+            .filter((e) => e.supervisorId === currentUser.id)
+            .map((e) => e.department),
+        ),
+      ];
+    }
+    // viewer role: no group breakdown access
+    return [];
+  }, [currentUser, employees]);
+
+  const supervisedUnits = useMemo(() => {
+    if (!currentUser || currentUser.role === 'admin') return null;
+    if (currentUser.role === 'editor') {
+      return [
+        ...new Set(
+          employees
+            .filter((e) => e.supervisorId === currentUser.id)
+            .map((e) => e.unit),
+        ),
+      ];
+    }
+    return [];
+  }, [currentUser, employees]);
 
   // ---- Stat cards ----
   const stats = useMemo(() => {
@@ -190,6 +250,88 @@ export function ENPSDashboardPage() {
     });
   }, [surveys, allInvites, selectedSurveyId]);
 
+  // ---- Group-level aggregation (department / unit) ----
+  const groupBreakdownData = useMemo((): GroupMetrics[] => {
+    // Build a lookup: employeeEmail -> employee record (for department/unit from employee data)
+    const emailToEmployee = new Map(employees.map((e) => [e.email, e]));
+
+    // Collect unique group names from responses
+    const groupKey = groupView;
+    const groupMap = new Map<string, ENPSResponse[]>();
+
+    for (const r of filteredResponses) {
+      let groupName: string | undefined;
+      if (groupKey === 'department') {
+        groupName = r.department;
+      } else {
+        groupName = r.unit;
+      }
+      if (!groupName) continue;
+
+      if (!groupMap.has(groupName)) {
+        groupMap.set(groupName, []);
+      }
+      groupMap.get(groupName)!.push(r);
+    }
+
+    // Calculate invited count per group from invites + employee data
+    const invitedPerGroup = new Map<string, number>();
+    for (const inv of filteredInvites) {
+      const emp = emailToEmployee.get(inv.employeeEmail);
+      if (!emp) continue;
+      const gName = groupKey === 'department' ? emp.department : emp.unit;
+      if (!gName) continue;
+      invitedPerGroup.set(gName, (invitedPerGroup.get(gName) ?? 0) + 1);
+    }
+
+    // Also include groups that have invites but no responses yet
+    for (const gName of invitedPerGroup.keys()) {
+      if (!groupMap.has(gName)) {
+        groupMap.set(gName, []);
+      }
+    }
+
+    const metrics: GroupMetrics[] = [];
+
+    for (const [groupName, responses] of groupMap.entries()) {
+      // Role-scoped filtering for editors
+      if (groupKey === 'department' && supervisedDepts !== null) {
+        if (!supervisedDepts.includes(groupName)) continue;
+      }
+      if (groupKey === 'unit' && supervisedUnits !== null) {
+        if (!supervisedUnits.includes(groupName)) continue;
+      }
+
+      const totalResponses = responses.length;
+      const totalInvited = invitedPerGroup.get(groupName) ?? 0;
+      const responseRate = totalInvited > 0 ? totalResponses / totalInvited : 0;
+
+      const belowThreshold =
+        totalResponses < MIN_RESPONSES || responseRate < MIN_RESPONSE_RATE;
+
+      const promoters = responses.filter((r) => r.score >= 9).length;
+      const passives = responses.filter((r) => r.score >= 7 && r.score <= 8).length;
+      const detractors = responses.filter((r) => r.score <= 6).length;
+      const nps = calculateNPS(responses);
+
+      metrics.push({
+        groupName,
+        nps,
+        promoters,
+        passives,
+        detractors,
+        totalResponses,
+        totalInvited,
+        responseRate,
+        belowThreshold,
+      });
+    }
+
+    // Sort by group name
+    metrics.sort((a, b) => a.groupName.localeCompare(b.groupName));
+    return metrics;
+  }, [filteredResponses, filteredInvites, employees, groupView, supervisedDepts, supervisedUnits]);
+
   // ---- Recent comments (filtered) ----
   const recentComments = useMemo(() => {
     return filteredResponses
@@ -212,6 +354,15 @@ export function ENPSDashboardPage() {
       : stats.nps >= 0
         ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400'
         : 'bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400';
+
+  // Whether the user can see group breakdown (admin or editor with supervised depts)
+  const canSeeGroupBreakdown =
+    currentUser?.role === 'admin' ||
+    (currentUser?.role === 'editor' && supervisedDepts !== null && supervisedDepts.length > 0);
+
+  // ---- Pagination ----
+  const groupPagination = useTablePagination(groupBreakdownData);
+  const commentPagination = useTablePagination(recentComments, { defaultPageSize: 5 });
 
   // ---- Render ----
   return (
@@ -540,7 +691,173 @@ export function ENPSDashboardPage() {
         </Card>
       </div>
 
-      {/* Row 4: Recent Comments */}
+      {/* Row 4: eNPS by Group (department / unit breakdown) */}
+      {canSeeGroupBreakdown && (
+        <Card>
+          <CardHeader>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Layers className="size-5" />
+                eNPS by Group
+                {isFiltered && (
+                  <span className="text-xs font-normal text-muted-foreground">
+                    ({selectedSurvey?.name})
+                  </span>
+                )}
+              </CardTitle>
+
+              {/* Toggle: By Department / By Unit */}
+              <div className="flex rounded-lg border bg-muted p-0.5">
+                <button
+                  onClick={() => setGroupView('department')}
+                  className={cn(
+                    'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
+                    groupView === 'department'
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground',
+                  )}
+                >
+                  <Building2 className="size-3.5" />
+                  By Department
+                </button>
+                <button
+                  onClick={() => setGroupView('unit')}
+                  className={cn(
+                    'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
+                    groupView === 'unit'
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground',
+                  )}
+                >
+                  <Layers className="size-3.5" />
+                  By Unit
+                </button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {groupBreakdownData.length > 0 ? (
+              <>
+              <div className="max-h-[600px] overflow-y-auto overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b text-left text-muted-foreground">
+                      <th className="pb-3 pr-4 font-medium">
+                        {groupView === 'department' ? 'Department' : 'Unit'}
+                      </th>
+                      <th className="pb-3 px-4 font-medium text-center">NPS Score</th>
+                      <th className="pb-3 px-4 font-medium text-center">Promoters</th>
+                      <th className="pb-3 px-4 font-medium text-center">Passives</th>
+                      <th className="pb-3 px-4 font-medium text-center">Detractors</th>
+                      <th className="pb-3 px-4 font-medium text-center">Responses</th>
+                      <th className="pb-3 pl-4 font-medium text-center">Response Rate</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {groupPagination.paginatedData.map((group) => (
+                      <tr key={group.groupName} className="group">
+                        <td className="py-3 pr-4 font-medium">{group.groupName}</td>
+
+                        {group.belowThreshold ? (
+                          <td colSpan={6} className="py-3 px-4">
+                            <div className="flex items-center justify-center gap-2 text-muted-foreground">
+                              <Lock className="size-3.5" />
+                              <span className="text-xs">
+                                Results hidden — insufficient responses for anonymity
+                              </span>
+                            </div>
+                          </td>
+                        ) : (
+                          <>
+                            <td className="py-3 px-4 text-center">
+                              <span
+                                className={cn(
+                                  'inline-block min-w-[3rem] rounded-full px-2.5 py-0.5 text-xs font-bold',
+                                  group.nps > 0
+                                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+                                    : group.nps < 0
+                                      ? 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300'
+                                      : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
+                                )}
+                              >
+                                {group.nps > 0 ? `+${group.nps}` : String(group.nps)}
+                              </span>
+                            </td>
+                            <td className="py-3 px-4 text-center">
+                              <span className="text-emerald-600 dark:text-emerald-400">
+                                {group.promoters}
+                              </span>
+                              <span className="ml-1 text-xs text-muted-foreground">
+                                ({group.totalResponses > 0 ? Math.round((group.promoters / group.totalResponses) * 100) : 0}%)
+                              </span>
+                            </td>
+                            <td className="py-3 px-4 text-center">
+                              <span className="text-amber-600 dark:text-amber-400">
+                                {group.passives}
+                              </span>
+                              <span className="ml-1 text-xs text-muted-foreground">
+                                ({group.totalResponses > 0 ? Math.round((group.passives / group.totalResponses) * 100) : 0}%)
+                              </span>
+                            </td>
+                            <td className="py-3 px-4 text-center">
+                              <span className="text-red-600 dark:text-red-400">
+                                {group.detractors}
+                              </span>
+                              <span className="ml-1 text-xs text-muted-foreground">
+                                ({group.totalResponses > 0 ? Math.round((group.detractors / group.totalResponses) * 100) : 0}%)
+                              </span>
+                            </td>
+                            <td className="py-3 px-4 text-center font-medium">
+                              {group.totalResponses}
+                            </td>
+                            <td className="py-3 pl-4 text-center">
+                              {group.totalInvited > 0
+                                ? `${Math.round(group.responseRate * 100)}%`
+                                : 'N/A'}
+                            </td>
+                          </>
+                        )}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <TablePagination
+                page={groupPagination.page}
+                totalPages={groupPagination.totalPages}
+                totalRows={groupPagination.totalRows}
+                pageSize={groupPagination.pageSize}
+                isShowingAll={groupPagination.isShowingAll}
+                onFirst={groupPagination.goFirst}
+                onPrev={groupPagination.goPrev}
+                onNext={groupPagination.goNext}
+                onLast={groupPagination.goLast}
+                onToggleShowAll={groupPagination.toggleShowAll}
+              />
+              </>
+            ) : (
+              <p className="py-8 text-center text-muted-foreground">
+                {supervisedDepts !== null && supervisedDepts.length === 0
+                  ? 'No departments under your supervision'
+                  : 'No group data available for the selected survey'}
+              </p>
+            )}
+
+            {/* Threshold explanation */}
+            {groupBreakdownData.some((g) => g.belowThreshold) && (
+              <div className="mt-4 flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-300">
+                <Lock className="mt-0.5 size-3 shrink-0" />
+                <span>
+                  Groups with fewer than {MIN_RESPONSES} responses or below {MIN_RESPONSE_RATE * 100}% response rate
+                  are hidden to protect employee anonymity.
+                </span>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Row 5: Recent Comments */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -555,8 +872,9 @@ export function ENPSDashboardPage() {
         </CardHeader>
         <CardContent>
           {recentComments.length > 0 ? (
+            <>
             <div className="space-y-4">
-              {recentComments.map((response) => (
+              {commentPagination.paginatedData.map((response) => (
                 <div key={response.id} className="flex items-start gap-3 rounded-lg border p-3">
                   <Badge className={cn('shrink-0 tabular-nums', getScoreColor(response.score))}>
                     {response.score}
@@ -570,6 +888,19 @@ export function ENPSDashboardPage() {
                 </div>
               ))}
             </div>
+            <TablePagination
+              page={commentPagination.page}
+              totalPages={commentPagination.totalPages}
+              totalRows={commentPagination.totalRows}
+              pageSize={commentPagination.pageSize}
+              isShowingAll={commentPagination.isShowingAll}
+              onFirst={commentPagination.goFirst}
+              onPrev={commentPagination.goPrev}
+              onNext={commentPagination.goNext}
+              onLast={commentPagination.goLast}
+              onToggleShowAll={commentPagination.toggleShowAll}
+            />
+            </>
           ) : (
             <p className="py-8 text-center text-muted-foreground">
               {isFiltered ? 'No comments for this survey' : 'No comments submitted yet'}
