@@ -110,6 +110,13 @@ export function remove(key: StorageKey, id: string): boolean {
 }
 
 // ---------------------------------------------------------------------------
+// Data versioning — bump this to force a full re-seed on next load
+// ---------------------------------------------------------------------------
+
+const DATA_VERSION = 2;
+const DATA_VERSION_KEY = 'hcm_data_version';
+
+// ---------------------------------------------------------------------------
 // Initialization — seed data if localStorage is empty
 // ---------------------------------------------------------------------------
 
@@ -120,6 +127,13 @@ function seedIfMissing<T>(key: StorageKey, data: T[]): void {
 }
 
 export function initializeData(): void {
+  // If data version has changed, wipe and re-seed everything
+  const storedVersion = Number(localStorage.getItem(DATA_VERSION_KEY) || '0');
+  if (storedVersion < DATA_VERSION) {
+    Object.values(KEYS).forEach((key) => localStorage.removeItem(key));
+    localStorage.setItem(DATA_VERSION_KEY, String(DATA_VERSION));
+  }
+
   seedIfMissing<User>(KEYS.users, seedUsers);
   seedIfMissing<Employee>(KEYS.employees, seedEmployees);
   seedIfMissing<Evaluation>(KEYS.evaluations, seedEvaluations);

@@ -29,6 +29,7 @@ export interface Employee {
   lastName: string;
   email: string;
   department: string;
+  unit: string; // e.g. "Technology", "Business"
   position: string;
   hireDate: string;
   currentSalary: number;
@@ -256,5 +257,7 @@ export interface ENPSResponse {
   surveyId: string;
   score: number;
   comment?: string;
+  department?: string; // captured at submission for anonymous group aggregation
+  unit?: string;       // captured at submission for anonymous group aggregation
   submittedAt: string;
 }

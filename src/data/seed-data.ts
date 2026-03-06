@@ -85,6 +85,7 @@ export const seedEmployees: Employee[] = [
     lastName: 'Reyes',
     email: 'alex.reyes@opscorp.com',
     department: 'Engineering',
+    unit: 'Technology',
     position: 'Senior Frontend Developer',
     hireDate: '2023-03-15',
     currentSalary: 85000,
@@ -99,6 +100,7 @@ export const seedEmployees: Employee[] = [
     lastName: 'Villanueva',
     email: 'bea.villanueva@opscorp.com',
     department: 'Engineering',
+    unit: 'Technology',
     position: 'Backend Developer',
     hireDate: '2023-08-01',
     currentSalary: 78000,
@@ -113,6 +115,7 @@ export const seedEmployees: Employee[] = [
     lastName: 'Navarro',
     email: 'chris.navarro@opscorp.com',
     department: 'Engineering',
+    unit: 'Technology',
     position: 'Junior Developer',
     hireDate: '2025-09-01',
     currentSalary: 52000,
@@ -127,6 +130,7 @@ export const seedEmployees: Employee[] = [
     lastName: 'Aquino',
     email: 'diana.aquino@opscorp.com',
     department: 'Engineering',
+    unit: 'Technology',
     position: 'QA Engineer',
     hireDate: '2024-01-10',
     currentSalary: 65000,
@@ -141,6 +145,7 @@ export const seedEmployees: Employee[] = [
     lastName: 'Garcia',
     email: 'ethan.garcia@opscorp.com',
     department: 'Engineering',
+    unit: 'Technology',
     position: 'DevOps Engineer',
     hireDate: '2024-06-15',
     currentSalary: 80000,
@@ -149,7 +154,7 @@ export const seedEmployees: Employee[] = [
     clientId: 'client-globex',
   },
 
-  // Design
+  // Design — supervised by Maria (usr-002)
   {
     id: 'emp-006',
     employeeId: 'EMP-006',
@@ -157,6 +162,7 @@ export const seedEmployees: Employee[] = [
     lastName: 'Torres',
     email: 'fiona.torres@opscorp.com',
     department: 'Design',
+    unit: 'Technology',
     position: 'UI/UX Lead',
     hireDate: '2022-11-01',
     currentSalary: 90000,
@@ -171,6 +177,7 @@ export const seedEmployees: Employee[] = [
     lastName: 'Ramos',
     email: 'gabriel.ramos@opscorp.com',
     department: 'Design',
+    unit: 'Technology',
     position: 'Visual Designer',
     hireDate: '2024-03-20',
     currentSalary: 62000,
@@ -185,6 +192,7 @@ export const seedEmployees: Employee[] = [
     lastName: 'De Leon',
     email: 'hannah.deleon@opscorp.com',
     department: 'Design',
+    unit: 'Technology',
     position: 'Product Designer',
     hireDate: '2025-10-15',
     currentSalary: 58000,
@@ -193,7 +201,7 @@ export const seedEmployees: Employee[] = [
     clientId: 'client-acme',
   },
 
-  // Marketing
+  // Marketing — supervised by Carlos (usr-003)
   {
     id: 'emp-009',
     employeeId: 'EMP-009',
@@ -201,6 +209,7 @@ export const seedEmployees: Employee[] = [
     lastName: 'Bautista',
     email: 'ian.bautista@opscorp.com',
     department: 'Marketing',
+    unit: 'Business',
     position: 'Marketing Manager',
     hireDate: '2023-01-05',
     currentSalary: 82000,
@@ -215,6 +224,7 @@ export const seedEmployees: Employee[] = [
     lastName: 'Fernandez',
     email: 'julia.fernandez@opscorp.com',
     department: 'Marketing',
+    unit: 'Business',
     position: 'Content Strategist',
     hireDate: '2024-04-01',
     currentSalary: 60000,
@@ -229,6 +239,7 @@ export const seedEmployees: Employee[] = [
     lastName: 'Pascual',
     email: 'kevin.pascual@opscorp.com',
     department: 'Marketing',
+    unit: 'Business',
     position: 'SEO Specialist',
     hireDate: '2024-07-15',
     currentSalary: 55000,
@@ -243,6 +254,7 @@ export const seedEmployees: Employee[] = [
     lastName: 'Dizon',
     email: 'lara.dizon@opscorp.com',
     department: 'Marketing',
+    unit: 'Business',
     position: 'Social Media Manager',
     hireDate: '2025-11-01',
     currentSalary: 48000,
@@ -251,7 +263,7 @@ export const seedEmployees: Employee[] = [
     clientId: 'client-globex',
   },
 
-  // Operations
+  // Operations — supervised by John (usr-005)
   {
     id: 'emp-013',
     employeeId: 'EMP-013',
@@ -259,6 +271,7 @@ export const seedEmployees: Employee[] = [
     lastName: 'Santos',
     email: 'miguel.santos@opscorp.com',
     department: 'Operations',
+    unit: 'Business',
     position: 'Operations Lead',
     hireDate: '2022-06-01',
     currentSalary: 88000,
@@ -273,6 +286,7 @@ export const seedEmployees: Employee[] = [
     lastName: 'Reyes',
     email: 'nicole.reyes@opscorp.com',
     department: 'Operations',
+    unit: 'Business',
     position: 'Project Coordinator',
     hireDate: '2024-02-01',
     currentSalary: 58000,
@@ -287,6 +301,7 @@ export const seedEmployees: Employee[] = [
     lastName: 'Tan',
     email: 'oscar.tan@opscorp.com',
     department: 'Operations',
+    unit: 'Business',
     position: 'Business Analyst',
     hireDate: '2024-09-15',
     currentSalary: 70000,
@@ -301,6 +316,7 @@ export const seedEmployees: Employee[] = [
     lastName: 'Lim',
     email: 'patricia.lim@opscorp.com',
     department: 'Operations',
+    unit: 'Business',
     position: 'Admin Assistant',
     hireDate: '2023-05-10',
     currentSalary: 45000,
@@ -315,6 +331,7 @@ export const seedEmployees: Employee[] = [
     lastName: 'Cruz',
     email: 'rafael.cruz@opscorp.com',
     department: 'Engineering',
+    unit: 'Technology',
     position: 'Full Stack Developer',
     hireDate: '2023-11-01',
     currentSalary: 76000,
@@ -329,12 +346,60 @@ export const seedEmployees: Employee[] = [
     lastName: 'Mendoza',
     email: 'sofia.mendoza@opscorp.com',
     department: 'Design',
+    unit: 'Technology',
     position: 'Motion Designer',
     hireDate: '2025-01-15',
     currentSalary: 60000,
     status: 'active',
     supervisorId: 'usr-002',
     clientId: 'client-globex',
+  },
+
+  // Additional employees to bring each department to 5+
+  {
+    id: 'emp-019',
+    employeeId: 'EMP-019',
+    firstName: 'Tricia',
+    lastName: 'Ocampo',
+    email: 'tricia.ocampo@opscorp.com',
+    department: 'Design',
+    unit: 'Technology',
+    position: 'UX Researcher',
+    hireDate: '2024-08-01',
+    currentSalary: 64000,
+    status: 'active',
+    supervisorId: 'usr-002',
+    clientId: 'client-acme',
+  },
+  {
+    id: 'emp-020',
+    employeeId: 'EMP-020',
+    firstName: 'Marco',
+    lastName: 'Villareal',
+    email: 'marco.villareal@opscorp.com',
+    department: 'Marketing',
+    unit: 'Business',
+    position: 'Growth Marketing Analyst',
+    hireDate: '2024-05-15',
+    currentSalary: 58000,
+    status: 'active',
+    supervisorId: 'usr-003',
+    clientId: 'client-globex',
+  },
+  {
+    id: 'emp-021',
+    employeeId: 'EMP-021',
+    firstName: 'Angela',
+    lastName: 'Dela Cruz',
+    email: 'angela.delacruz@opscorp.com',
+    department: 'Operations',
+    unit: 'Business',
+    position: 'Quality Assurance Analyst',
+    hireDate: '2024-10-01',
+    currentSalary: 56000,
+    status: 'active',
+    supervisorId: 'usr-005',
+    clientId: 'client-acme',
   },
 ];
 
@@ -1485,27 +1550,65 @@ export const seedENPSSurveys: ENPSSurvey[] = [
 // ============================================================================
 
 export const seedENPSInvites: ENPSInvite[] = [
-  // ---- Q4 2025 (closed, all answered) ----
+  // ==========================================================================
+  // Q4 2025 — CLOSED, ALL 21 employees invited, ALL answered (100%)
+  // Demonstrates: full threshold compliance, all departments visible
+  // ==========================================================================
+  // Engineering (6)
   { id: 'enps-inv-001', surveyId: 'enps-surv-001', employeeEmail: 'alex.reyes@opscorp.com', linkId: 'nps-q4-a1b2c3', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-05' },
   { id: 'enps-inv-002', surveyId: 'enps-surv-001', employeeEmail: 'bea.villanueva@opscorp.com', linkId: 'nps-q4-d4e5f6', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-03' },
   { id: 'enps-inv-003', surveyId: 'enps-surv-001', employeeEmail: 'chris.navarro@opscorp.com', linkId: 'nps-q4-g7h8i9', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-07' },
   { id: 'enps-inv-004', surveyId: 'enps-surv-001', employeeEmail: 'diana.aquino@opscorp.com', linkId: 'nps-q4-j0k1l2', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-04' },
   { id: 'enps-inv-005', surveyId: 'enps-surv-001', employeeEmail: 'ethan.garcia@opscorp.com', linkId: 'nps-q4-m3n4o5', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-06' },
+  { id: 'enps-inv-019', surveyId: 'enps-surv-001', employeeEmail: 'rafael.cruz@opscorp.com', linkId: 'nps-q4-rc1x2y', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-09' },
+  // Design (5)
   { id: 'enps-inv-006', surveyId: 'enps-surv-001', employeeEmail: 'fiona.torres@opscorp.com', linkId: 'nps-q4-p6q7r8', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-08' },
   { id: 'enps-inv-007', surveyId: 'enps-surv-001', employeeEmail: 'gabriel.ramos@opscorp.com', linkId: 'nps-q4-s9t0u1', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-05' },
+  { id: 'enps-inv-020', surveyId: 'enps-surv-001', employeeEmail: 'hannah.deleon@opscorp.com', linkId: 'nps-q4-hd3z4a', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-06' },
+  { id: 'enps-inv-021', surveyId: 'enps-surv-001', employeeEmail: 'sofia.mendoza@opscorp.com', linkId: 'nps-q4-sm5b6c', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-10' },
+  { id: 'enps-inv-030', surveyId: 'enps-surv-001', employeeEmail: 'tricia.ocampo@opscorp.com', linkId: 'nps-q4-to1u2v', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-07' },
+  // Marketing (5)
+  { id: 'enps-inv-022', surveyId: 'enps-surv-001', employeeEmail: 'ian.bautista@opscorp.com', linkId: 'nps-q4-ib7d8e', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-04' },
+  { id: 'enps-inv-023', surveyId: 'enps-surv-001', employeeEmail: 'julia.fernandez@opscorp.com', linkId: 'nps-q4-jf9g0h', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-07' },
+  { id: 'enps-inv-024', surveyId: 'enps-surv-001', employeeEmail: 'kevin.pascual@opscorp.com', linkId: 'nps-q4-kp1i2j', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-08' },
+  { id: 'enps-inv-025', surveyId: 'enps-surv-001', employeeEmail: 'lara.dizon@opscorp.com', linkId: 'nps-q4-ld3k4l', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-09' },
+  { id: 'enps-inv-031', surveyId: 'enps-surv-001', employeeEmail: 'marco.villareal@opscorp.com', linkId: 'nps-q4-mv3w4x', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-06' },
+  // Operations (5)
+  { id: 'enps-inv-026', surveyId: 'enps-surv-001', employeeEmail: 'miguel.santos@opscorp.com', linkId: 'nps-q4-ms5m6n', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-05' },
+  { id: 'enps-inv-027', surveyId: 'enps-surv-001', employeeEmail: 'nicole.reyes@opscorp.com', linkId: 'nps-q4-nr7o8p', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-06' },
+  { id: 'enps-inv-028', surveyId: 'enps-surv-001', employeeEmail: 'oscar.tan@opscorp.com', linkId: 'nps-q4-ot9q0r', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-07' },
+  { id: 'enps-inv-029', surveyId: 'enps-surv-001', employeeEmail: 'patricia.lim@opscorp.com', linkId: 'nps-q4-pl1s2t', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-10' },
+  { id: 'enps-inv-032', surveyId: 'enps-surv-001', employeeEmail: 'angela.delacruz@opscorp.com', linkId: 'nps-q4-ad5y6z', answered: true, sentAt: '2025-10-02', answeredAt: '2025-10-08' },
 
-  // ---- Q1 2026 (active, mix of answered/unanswered) ----
+  // ==========================================================================
+  // Q1 2026 — ACTIVE, ALL 21 invited, only ~10 answered (partial participation)
+  // Demonstrates: Engineering passes threshold, others hidden
+  // ==========================================================================
+  // Engineering (5 of 6 answered)
   { id: 'enps-inv-008', surveyId: 'enps-surv-002', employeeEmail: 'alex.reyes@opscorp.com', linkId: 'nps-q1-v2w3x4', answered: true, sentAt: '2026-01-16', answeredAt: '2026-01-18' },
   { id: 'enps-inv-009', surveyId: 'enps-surv-002', employeeEmail: 'bea.villanueva@opscorp.com', linkId: 'nps-q1-y5z6a7', answered: true, sentAt: '2026-01-16', answeredAt: '2026-01-17' },
   { id: 'enps-inv-010', surveyId: 'enps-surv-002', employeeEmail: 'chris.navarro@opscorp.com', linkId: 'nps-q1-b8c9d0', answered: true, sentAt: '2026-01-16', answeredAt: '2026-01-20' },
   { id: 'enps-inv-011', surveyId: 'enps-surv-002', employeeEmail: 'diana.aquino@opscorp.com', linkId: 'nps-q1-e1f2g3', answered: true, sentAt: '2026-01-16', answeredAt: '2026-01-19' },
   { id: 'enps-inv-012', surveyId: 'enps-surv-002', employeeEmail: 'ethan.garcia@opscorp.com', linkId: 'nps-q1-h4i5j6', answered: true, sentAt: '2026-01-16', answeredAt: '2026-01-22' },
-  { id: 'enps-inv-013', surveyId: 'enps-surv-002', employeeEmail: 'fiona.torres@opscorp.com', linkId: 'nps-q1-k7l8m9', answered: false, sentAt: '2026-01-16' },
+  { id: 'enps-inv-033', surveyId: 'enps-surv-002', employeeEmail: 'rafael.cruz@opscorp.com', linkId: 'nps-q1-rc7a8b', answered: false, sentAt: '2026-01-16' },
+  // Design (2 of 5 answered)
+  { id: 'enps-inv-013', surveyId: 'enps-surv-002', employeeEmail: 'fiona.torres@opscorp.com', linkId: 'nps-q1-k7l8m9', answered: true, sentAt: '2026-01-16', answeredAt: '2026-01-20' },
   { id: 'enps-inv-014', surveyId: 'enps-surv-002', employeeEmail: 'gabriel.ramos@opscorp.com', linkId: 'nps-q1-n0o1p2', answered: false, sentAt: '2026-01-16' },
   { id: 'enps-inv-015', surveyId: 'enps-surv-002', employeeEmail: 'hannah.deleon@opscorp.com', linkId: 'nps-q1-q3r4s5', answered: false, sentAt: '2026-01-16' },
+  { id: 'enps-inv-034', surveyId: 'enps-surv-002', employeeEmail: 'sofia.mendoza@opscorp.com', linkId: 'nps-q1-sm9c0d', answered: true, sentAt: '2026-01-16', answeredAt: '2026-01-21' },
+  { id: 'enps-inv-035', surveyId: 'enps-surv-002', employeeEmail: 'tricia.ocampo@opscorp.com', linkId: 'nps-q1-to1e2f', answered: false, sentAt: '2026-01-16' },
+  // Marketing (2 of 5 answered)
   { id: 'enps-inv-016', surveyId: 'enps-surv-002', employeeEmail: 'ian.bautista@opscorp.com', linkId: 'nps-q1-t6u7v8', answered: false, sentAt: '2026-01-16' },
   { id: 'enps-inv-017', surveyId: 'enps-surv-002', employeeEmail: 'julia.fernandez@opscorp.com', linkId: 'nps-q1-w9x0y1', answered: true, sentAt: '2026-01-16', answeredAt: '2026-01-21' },
   { id: 'enps-inv-018', surveyId: 'enps-surv-002', employeeEmail: 'kevin.pascual@opscorp.com', linkId: 'nps-q1-z2a3b4', answered: false, sentAt: '2026-01-16' },
+  { id: 'enps-inv-036', surveyId: 'enps-surv-002', employeeEmail: 'lara.dizon@opscorp.com', linkId: 'nps-q1-ld3g4h', answered: false, sentAt: '2026-01-16' },
+  { id: 'enps-inv-037', surveyId: 'enps-surv-002', employeeEmail: 'marco.villareal@opscorp.com', linkId: 'nps-q1-mv5i6j', answered: true, sentAt: '2026-01-16', answeredAt: '2026-01-23' },
+  // Operations (1 of 5 answered)
+  { id: 'enps-inv-038', surveyId: 'enps-surv-002', employeeEmail: 'miguel.santos@opscorp.com', linkId: 'nps-q1-ms7k8l', answered: true, sentAt: '2026-01-16', answeredAt: '2026-01-19' },
+  { id: 'enps-inv-039', surveyId: 'enps-surv-002', employeeEmail: 'nicole.reyes@opscorp.com', linkId: 'nps-q1-nr9m0n', answered: false, sentAt: '2026-01-16' },
+  { id: 'enps-inv-040', surveyId: 'enps-surv-002', employeeEmail: 'oscar.tan@opscorp.com', linkId: 'nps-q1-ot1o2p', answered: false, sentAt: '2026-01-16' },
+  { id: 'enps-inv-041', surveyId: 'enps-surv-002', employeeEmail: 'patricia.lim@opscorp.com', linkId: 'nps-q1-pl3q4r', answered: false, sentAt: '2026-01-16' },
+  { id: 'enps-inv-042', surveyId: 'enps-surv-002', employeeEmail: 'angela.delacruz@opscorp.com', linkId: 'nps-q1-ad5s6t', answered: false, sentAt: '2026-01-16' },
 ];
 
 // ============================================================================
@@ -1513,20 +1616,62 @@ export const seedENPSInvites: ENPSInvite[] = [
 // ============================================================================
 
 export const seedENPSResponses: ENPSResponse[] = [
-  // ---- Q4 2025 responses (7 total — matches 7 answered invites) ----
-  { id: 'enps-res-001', surveyId: 'enps-surv-001', score: 9, comment: 'Great team culture and supportive management.', submittedAt: '2025-10-05' },
-  { id: 'enps-res-002', surveyId: 'enps-surv-001', score: 10, comment: 'Best company I have worked for!', submittedAt: '2025-10-03' },
-  { id: 'enps-res-003', surveyId: 'enps-surv-001', score: 7, submittedAt: '2025-10-07' },
-  { id: 'enps-res-004', surveyId: 'enps-surv-001', score: 8, comment: 'Good benefits but could improve remote work policies.', submittedAt: '2025-10-04' },
-  { id: 'enps-res-005', surveyId: 'enps-surv-001', score: 5, comment: 'Workload can be overwhelming at times.', submittedAt: '2025-10-06' },
-  { id: 'enps-res-006', surveyId: 'enps-surv-001', score: 9, submittedAt: '2025-10-08' },
-  { id: 'enps-res-007', surveyId: 'enps-surv-001', score: 6, comment: 'Career growth paths are not clear enough.', submittedAt: '2025-10-05' },
+  // ==========================================================================
+  // Q4 2025 — 21 responses (100% participation, ALL departments pass threshold)
+  // ==========================================================================
 
-  // ---- Q1 2026 responses (6 total — matches 6 answered invites) ----
-  { id: 'enps-res-008', surveyId: 'enps-surv-002', score: 10, comment: 'The new leadership is doing an amazing job!', submittedAt: '2026-01-18' },
-  { id: 'enps-res-009', surveyId: 'enps-surv-002', score: 9, comment: 'Love the flexible work arrangements.', submittedAt: '2026-01-17' },
-  { id: 'enps-res-010', surveyId: 'enps-surv-002', score: 4, comment: 'Need better communication between departments.', submittedAt: '2026-01-20' },
-  { id: 'enps-res-011', surveyId: 'enps-surv-002', score: 8, submittedAt: '2026-01-19' },
-  { id: 'enps-res-012', surveyId: 'enps-surv-002', score: 9, comment: 'Excellent learning opportunities and mentorship.', submittedAt: '2026-01-22' },
-  { id: 'enps-res-013', surveyId: 'enps-surv-002', score: 7, comment: 'Decent workplace, but compensation could be more competitive.', submittedAt: '2026-01-21' },
+  // Engineering (6 responses) — Promoters: 3, Passives: 2, Detractors: 1 → NPS = +33
+  { id: 'enps-res-001', surveyId: 'enps-surv-001', score: 9, department: 'Engineering', unit: 'Technology', comment: 'Great team culture and supportive management.', submittedAt: '2025-10-05' },
+  { id: 'enps-res-002', surveyId: 'enps-surv-001', score: 10, department: 'Engineering', unit: 'Technology', comment: 'Best company I have worked for!', submittedAt: '2025-10-03' },
+  { id: 'enps-res-003', surveyId: 'enps-surv-001', score: 7, department: 'Engineering', unit: 'Technology', submittedAt: '2025-10-07' },
+  { id: 'enps-res-014', surveyId: 'enps-surv-001', score: 9, department: 'Engineering', unit: 'Technology', comment: 'Solid engineering practices and good code reviews.', submittedAt: '2025-10-09' },
+  { id: 'enps-res-015', surveyId: 'enps-surv-001', score: 8, department: 'Engineering', unit: 'Technology', submittedAt: '2025-10-06' },
+  { id: 'enps-res-016', surveyId: 'enps-surv-001', score: 5, department: 'Engineering', unit: 'Technology', comment: 'On-call rotations are exhausting.', submittedAt: '2025-10-04' },
+
+  // Design (5 responses) — Promoters: 2, Passives: 2, Detractors: 1 → NPS = +20
+  { id: 'enps-res-004', surveyId: 'enps-surv-001', score: 8, department: 'Design', unit: 'Technology', comment: 'Good benefits but could improve remote work policies.', submittedAt: '2025-10-04' },
+  { id: 'enps-res-005', surveyId: 'enps-surv-001', score: 5, department: 'Design', unit: 'Technology', comment: 'Workload can be overwhelming at times.', submittedAt: '2025-10-06' },
+  { id: 'enps-res-017', surveyId: 'enps-surv-001', score: 9, department: 'Design', unit: 'Technology', comment: 'Creative freedom and great collaboration.', submittedAt: '2025-10-06' },
+  { id: 'enps-res-018', surveyId: 'enps-surv-001', score: 7, department: 'Design', unit: 'Technology', submittedAt: '2025-10-10' },
+  { id: 'enps-res-025', surveyId: 'enps-surv-001', score: 10, department: 'Design', unit: 'Technology', comment: 'Love the design system we have built together.', submittedAt: '2025-10-07' },
+
+  // Marketing (5 responses) — Promoters: 2, Passives: 1, Detractors: 2 → NPS = 0
+  { id: 'enps-res-006', surveyId: 'enps-surv-001', score: 9, department: 'Marketing', unit: 'Business', comment: 'Love the brand direction we are taking.', submittedAt: '2025-10-08' },
+  { id: 'enps-res-019', surveyId: 'enps-surv-001', score: 6, department: 'Marketing', unit: 'Business', comment: 'Would like more budget for campaigns.', submittedAt: '2025-10-07' },
+  { id: 'enps-res-020', surveyId: 'enps-surv-001', score: 10, department: 'Marketing', unit: 'Business', submittedAt: '2025-10-08' },
+  { id: 'enps-res-021', surveyId: 'enps-surv-001', score: 8, department: 'Marketing', unit: 'Business', comment: 'Good team synergy and open communication.', submittedAt: '2025-10-09' },
+  { id: 'enps-res-026', surveyId: 'enps-surv-001', score: 4, department: 'Marketing', unit: 'Business', comment: 'Compensation is below market rate for our roles.', submittedAt: '2025-10-06' },
+
+  // Operations (5 responses) — Promoters: 1, Passives: 2, Detractors: 2 → NPS = -20
+  { id: 'enps-res-007', surveyId: 'enps-surv-001', score: 6, department: 'Operations', unit: 'Business', comment: 'Career growth paths are not clear enough.', submittedAt: '2025-10-05' },
+  { id: 'enps-res-022', surveyId: 'enps-surv-001', score: 9, department: 'Operations', unit: 'Business', comment: 'Appreciate the structured processes.', submittedAt: '2025-10-06' },
+  { id: 'enps-res-023', surveyId: 'enps-surv-001', score: 7, department: 'Operations', unit: 'Business', submittedAt: '2025-10-07' },
+  { id: 'enps-res-024', surveyId: 'enps-surv-001', score: 4, department: 'Operations', unit: 'Business', comment: 'Too many manual tasks, need more automation.', submittedAt: '2025-10-10' },
+  { id: 'enps-res-027', surveyId: 'enps-surv-001', score: 8, department: 'Operations', unit: 'Business', comment: 'Decent work-life balance overall.', submittedAt: '2025-10-08' },
+
+  // ==========================================================================
+  // Q1 2026 — 10 responses (partial participation, mixed threshold visibility)
+  // Engineering: 5 responses → PASSES threshold (5/6 = 83%)
+  // Design: 2 responses → HIDDEN (< 5 minimum)
+  // Marketing: 2 responses → HIDDEN (< 5 minimum)
+  // Operations: 1 response → HIDDEN (< 5 minimum)
+  // ==========================================================================
+
+  // Engineering (5 responses) — Promoters: 3, Passives: 1, Detractors: 1 → NPS = +40
+  { id: 'enps-res-008', surveyId: 'enps-surv-002', score: 10, department: 'Engineering', unit: 'Technology', comment: 'The new leadership is doing an amazing job!', submittedAt: '2026-01-18' },
+  { id: 'enps-res-009', surveyId: 'enps-surv-002', score: 9, department: 'Engineering', unit: 'Technology', comment: 'Love the flexible work arrangements.', submittedAt: '2026-01-17' },
+  { id: 'enps-res-010', surveyId: 'enps-surv-002', score: 4, department: 'Engineering', unit: 'Technology', comment: 'Need better communication between departments.', submittedAt: '2026-01-20' },
+  { id: 'enps-res-011', surveyId: 'enps-surv-002', score: 8, department: 'Engineering', unit: 'Technology', submittedAt: '2026-01-19' },
+  { id: 'enps-res-028', surveyId: 'enps-surv-002', score: 9, department: 'Engineering', unit: 'Technology', comment: 'Technical challenges keep me engaged.', submittedAt: '2026-01-22' },
+
+  // Design (2 responses) — below threshold
+  { id: 'enps-res-012', surveyId: 'enps-surv-002', score: 9, department: 'Design', unit: 'Technology', comment: 'Excellent learning opportunities and mentorship.', submittedAt: '2026-01-20' },
+  { id: 'enps-res-029', surveyId: 'enps-surv-002', score: 7, department: 'Design', unit: 'Technology', submittedAt: '2026-01-21' },
+
+  // Marketing (2 responses) — below threshold
+  { id: 'enps-res-013', surveyId: 'enps-surv-002', score: 7, department: 'Marketing', unit: 'Business', comment: 'Decent workplace, but compensation could be more competitive.', submittedAt: '2026-01-21' },
+  { id: 'enps-res-030', surveyId: 'enps-surv-002', score: 10, department: 'Marketing', unit: 'Business', comment: 'Really enjoying the new marketing tools.', submittedAt: '2026-01-23' },
+
+  // Operations (1 response) — below threshold
+  { id: 'enps-res-031', surveyId: 'enps-surv-002', score: 6, department: 'Operations', unit: 'Business', comment: 'Still waiting on process improvements that were promised last quarter.', submittedAt: '2026-01-19' },
 ];

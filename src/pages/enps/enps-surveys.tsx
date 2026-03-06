@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTablePagination, TablePagination } from '@/components/ui/table-pagination';
 import {
   Dialog,
   DialogContent,
@@ -65,18 +66,25 @@ export function ENPSSurveysPage() {
 
   // Pre-compute per-survey metrics
   const surveyMetrics = useMemo(() => {
+    const employees = storage.getEmployees();
     const metrics = new Map<
       string,
-      { invited: number; responded: number; nps: number }
+      { invited: number; responded: number; nps: number; departments: string[]; units: string[] }
     >();
 
     for (const survey of surveys) {
       const invites = allInvites.filter((i) => i.surveyId === survey.id);
       const responses = allResponses.filter((r) => r.surveyId === survey.id);
+      const inviteEmails = invites.map((i) => i.employeeEmail);
+      const matchedEmployees = employees.filter((e) => inviteEmails.includes(e.email));
+      const departments = [...new Set(matchedEmployees.map((e) => e.department))].filter(Boolean);
+      const units = [...new Set(matchedEmployees.map((e) => e.unit))].filter(Boolean);
       metrics.set(survey.id, {
         invited: invites.length,
         responded: responses.length,
         nps: calculateNPS(responses),
+        departments,
+        units,
       });
     }
 
@@ -100,6 +108,18 @@ export function ENPSSurveysPage() {
 
     return { total, active, totalResponses, avgNPS };
   }, [surveys, allResponses, surveyMetrics]);
+
+  // Sorted surveys
+  const sortedSurveys = useMemo(
+    () =>
+      [...surveys].sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      ),
+    [surveys]
+  );
+
+  // Pagination
+  const pagination = useTablePagination(sortedSurveys);
 
   // Create survey handler
   const handleCreateSurvey = useCallback(() => {
@@ -299,132 +319,187 @@ export function ENPSSurveysPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto rounded-md border">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b bg-muted/50 text-left">
-                  <th className="whitespace-nowrap px-4 py-3 font-medium">Name</th>
-                  <th className="whitespace-nowrap px-4 py-3 font-medium">Status</th>
-                  <th className="hidden whitespace-nowrap px-4 py-3 font-medium sm:table-cell">
-                    Created
-                  </th>
-                  <th className="whitespace-nowrap px-4 py-3 font-medium text-center">Invited</th>
-                  <th className="whitespace-nowrap px-4 py-3 font-medium text-center">Responded</th>
-                  <th className="hidden whitespace-nowrap px-4 py-3 font-medium text-center md:table-cell">
-                    NPS Score
-                  </th>
-                  <th className="whitespace-nowrap px-4 py-3 font-medium text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {surveys.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="px-4 py-12 text-center text-muted-foreground">
-                      No surveys yet. Create your first eNPS survey to get started.
-                    </td>
+          <div className="max-h-[600px] overflow-y-auto rounded-md border">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b bg-muted/50 text-left">
+                    <th className="whitespace-nowrap px-4 py-3 font-medium">Name</th>
+                    <th className="whitespace-nowrap px-4 py-3 font-medium">Status</th>
+                    <th className="hidden whitespace-nowrap px-4 py-3 font-medium sm:table-cell">
+                      Created
+                    </th>
+                    <th className="hidden whitespace-nowrap px-4 py-3 font-medium lg:table-cell">
+                      Departments
+                    </th>
+                    <th className="hidden whitespace-nowrap px-4 py-3 font-medium xl:table-cell">
+                      Units
+                    </th>
+                    <th className="whitespace-nowrap px-4 py-3 font-medium text-center">Invited</th>
+                    <th className="whitespace-nowrap px-4 py-3 font-medium text-center">Responded</th>
+                    <th className="hidden whitespace-nowrap px-4 py-3 font-medium text-center md:table-cell">
+                      NPS Score
+                    </th>
+                    <th className="whitespace-nowrap px-4 py-3 font-medium text-right">Actions</th>
                   </tr>
-                ) : (
-                  [...surveys]
-                    .sort(
-                      (a, b) =>
-                        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-                    )
-                    .map((survey) => {
-                      const metrics = surveyMetrics.get(survey.id);
-                      const invited = metrics?.invited ?? 0;
-                      const responded = metrics?.responded ?? 0;
-                      const nps = metrics?.nps ?? 0;
-                      const hasResponses = responded > 0;
+                </thead>
+                <tbody>
+                  {surveys.length === 0 ? (
+                    <tr>
+                      <td colSpan={9} className="px-4 py-12 text-center text-muted-foreground">
+                        No surveys yet. Create your first eNPS survey to get started.
+                      </td>
+                    </tr>
+                  ) : (
+                    pagination.paginatedData.map((survey) => {
+                        const metrics = surveyMetrics.get(survey.id);
+                        const invited = metrics?.invited ?? 0;
+                        const responded = metrics?.responded ?? 0;
+                        const nps = metrics?.nps ?? 0;
+                        const departments = metrics?.departments ?? [];
+                        const units = metrics?.units ?? [];
+                        const hasResponses = responded > 0;
 
-                      return (
-                        <tr
-                          key={survey.id}
-                          className="border-b transition-colors last:border-b-0 hover:bg-muted/30"
-                        >
-                          {/* Name */}
-                          <td className="px-4 py-3 font-medium">{survey.name}</td>
+                        return (
+                          <tr
+                            key={survey.id}
+                            className="border-b transition-colors last:border-b-0 hover:bg-muted/30"
+                          >
+                            {/* Name */}
+                            <td className="px-4 py-3 font-medium">{survey.name}</td>
 
-                          {/* Status */}
-                          <td className="px-4 py-3">
-                            <Badge
-                              className={cn(
-                                survey.status === 'active'
-                                  ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'
-                                  : 'bg-gray-100 text-gray-700 dark:bg-gray-800/40 dark:text-gray-300'
-                              )}
-                            >
-                              {survey.status === 'active' ? 'Active' : 'Closed'}
-                            </Badge>
-                          </td>
-
-                          {/* Created */}
-                          <td className="hidden px-4 py-3 text-muted-foreground sm:table-cell">
-                            {formatDate(survey.createdAt)}
-                          </td>
-
-                          {/* Invited */}
-                          <td className="px-4 py-3 text-center">{invited}</td>
-
-                          {/* Responded */}
-                          <td className="px-4 py-3 text-center">{responded}</td>
-
-                          {/* NPS Score */}
-                          <td className="hidden px-4 py-3 text-center md:table-cell">
-                            <span
-                              className={cn(
-                                'font-semibold',
-                                nps > 0
-                                  ? 'text-green-600 dark:text-green-400'
-                                  : nps < 0
-                                    ? 'text-red-600 dark:text-red-400'
-                                    : 'text-muted-foreground'
-                              )}
-                            >
-                              {responded > 0 ? nps : '--'}
-                            </span>
-                          </td>
-
-                          {/* Actions */}
-                          <td className="px-4 py-3 text-right">
-                            <div className="flex items-center justify-end gap-1">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => navigate(`/enps/surveys/${survey.id}`)}
+                            {/* Status */}
+                            <td className="px-4 py-3">
+                              <Badge
+                                className={cn(
+                                  survey.status === 'active'
+                                    ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'
+                                    : 'bg-gray-100 text-gray-700 dark:bg-gray-800/40 dark:text-gray-300'
+                                )}
                               >
-                                <Eye className="size-3.5" />
-                                <span className="hidden sm:inline">View</span>
-                              </Button>
-                              {survey.status === 'active' && (
+                                {survey.status === 'active' ? 'Active' : 'Closed'}
+                              </Badge>
+                            </td>
+
+                            {/* Created */}
+                            <td className="hidden px-4 py-3 text-muted-foreground sm:table-cell">
+                              {formatDate(survey.createdAt)}
+                            </td>
+
+                            {/* Departments */}
+                            <td className="hidden px-4 py-3 lg:table-cell">
+                              <div className="flex flex-wrap gap-1">
+                                {departments.length > 0 ? (
+                                  departments.map((dept) => (
+                                    <Badge
+                                      key={dept}
+                                      variant="secondary"
+                                      className="text-[10px] px-1.5 py-0"
+                                    >
+                                      {dept}
+                                    </Badge>
+                                  ))
+                                ) : (
+                                  <span className="text-muted-foreground">--</span>
+                                )}
+                              </div>
+                            </td>
+
+                            {/* Units */}
+                            <td className="hidden px-4 py-3 xl:table-cell">
+                              <div className="flex flex-wrap gap-1">
+                                {units.length > 0 ? (
+                                  units.map((unit) => (
+                                    <Badge
+                                      key={unit}
+                                      variant="secondary"
+                                      className="text-[10px] px-1.5 py-0"
+                                    >
+                                      {unit}
+                                    </Badge>
+                                  ))
+                                ) : (
+                                  <span className="text-muted-foreground">--</span>
+                                )}
+                              </div>
+                            </td>
+
+                            {/* Invited */}
+                            <td className="px-4 py-3 text-center">{invited}</td>
+
+                            {/* Responded */}
+                            <td className="px-4 py-3 text-center">{responded}</td>
+
+                            {/* NPS Score */}
+                            <td className="hidden px-4 py-3 text-center md:table-cell">
+                              <span
+                                className={cn(
+                                  'font-semibold',
+                                  nps > 0
+                                    ? 'text-green-600 dark:text-green-400'
+                                    : nps < 0
+                                      ? 'text-red-600 dark:text-red-400'
+                                      : 'text-muted-foreground'
+                                )}
+                              >
+                                {responded > 0 ? nps : '--'}
+                              </span>
+                            </td>
+
+                            {/* Actions */}
+                            <td className="px-4 py-3 text-right">
+                              <div className="flex items-center justify-end gap-1">
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  onClick={() => handleCloseSurvey(survey.id)}
+                                  onClick={() => navigate(`/enps/surveys/${survey.id}`)}
                                 >
-                                  <XCircle className="size-3.5" />
-                                  <span className="hidden lg:inline">Close</span>
+                                  <Eye className="size-3.5" />
+                                  <span className="hidden sm:inline">View</span>
                                 </Button>
-                              )}
-                              {!hasResponses && (
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="text-destructive hover:text-destructive"
-                                  onClick={() => handleDeleteSurvey(survey.id)}
-                                >
-                                  <Trash2 className="size-3.5" />
-                                  <span className="hidden lg:inline">Delete</span>
-                                </Button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })
-                )}
-              </tbody>
-            </table>
+                                {survey.status === 'active' && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleCloseSurvey(survey.id)}
+                                  >
+                                    <XCircle className="size-3.5" />
+                                    <span className="hidden lg:inline">Close</span>
+                                  </Button>
+                                )}
+                                {!hasResponses && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="text-destructive hover:text-destructive"
+                                    onClick={() => handleDeleteSurvey(survey.id)}
+                                  >
+                                    <Trash2 className="size-3.5" />
+                                    <span className="hidden lg:inline">Delete</span>
+                                  </Button>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
+          <TablePagination
+            page={pagination.page}
+            totalPages={pagination.totalPages}
+            totalRows={pagination.totalRows}
+            pageSize={pagination.pageSize}
+            isShowingAll={pagination.isShowingAll}
+            onFirst={pagination.goFirst}
+            onPrev={pagination.goPrev}
+            onNext={pagination.goNext}
+            onLast={pagination.goLast}
+            onToggleShowAll={pagination.toggleShowAll}
+          />
         </CardContent>
       </Card>
     </div>

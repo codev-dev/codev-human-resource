@@ -11,6 +11,7 @@ import {
   Mail,
   Calendar,
   DollarSign,
+  Layers,
 } from 'lucide-react';
 import { storage } from '@/lib/storage';
 import { useAuthStore } from '@/stores/auth-store';
@@ -27,12 +28,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import type { Employee } from '@/types';
+import { useTablePagination, TablePagination } from '@/components/ui/table-pagination';
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-type SortField = 'employeeId' | 'name' | 'department' | 'position' | 'status' | 'hireDate' | 'currentSalary';
+type SortField = 'employeeId' | 'name' | 'department' | 'unit' | 'position' | 'status' | 'hireDate' | 'currentSalary';
 type SortDir = 'asc' | 'desc';
 
 // ---------------------------------------------------------------------------
@@ -120,6 +122,9 @@ export function EmployeeListPage() {
         case 'department':
           cmp = a.department.localeCompare(b.department);
           break;
+        case 'unit':
+          cmp = a.unit.localeCompare(b.unit);
+          break;
         case 'position':
           cmp = a.position.localeCompare(b.position);
           break;
@@ -166,6 +171,8 @@ export function EmployeeListPage() {
   }
 
   const hasActiveFilters = search || filterDept !== 'all' || filterStatus !== 'all' || filterPosition !== 'all';
+
+  const pagination = useTablePagination(filtered);
 
   return (
     <div className="space-y-6">
@@ -263,13 +270,14 @@ export function EmployeeListPage() {
       <div className="hidden md:block">
         <Card>
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
+            <div className="max-h-[600px] overflow-x-auto overflow-y-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b bg-muted/40">
                     <ThCell field="employeeId" label="Employee ID" onSort={handleSort} icon={<SortIcon field="employeeId" />} />
                     <ThCell field="name" label="Name" onSort={handleSort} icon={<SortIcon field="name" />} />
                     <ThCell field="department" label="Department" onSort={handleSort} icon={<SortIcon field="department" />} />
+                    <ThCell field="unit" label="Unit" onSort={handleSort} icon={<SortIcon field="unit" />} />
                     <ThCell field="position" label="Position" onSort={handleSort} icon={<SortIcon field="position" />} />
                     <ThCell field="status" label="Status" onSort={handleSort} icon={<SortIcon field="status" />} />
                     <ThCell field="hireDate" label="Hire Date" onSort={handleSort} icon={<SortIcon field="hireDate" />} />
@@ -281,12 +289,12 @@ export function EmployeeListPage() {
                 <tbody>
                   {filtered.length === 0 ? (
                     <tr>
-                      <td colSpan={isViewer ? 6 : 7} className="py-12 text-center text-muted-foreground">
+                      <td colSpan={isViewer ? 7 : 8} className="py-12 text-center text-muted-foreground">
                         No employees match your search criteria.
                       </td>
                     </tr>
                   ) : (
-                    filtered.map((emp) => {
+                    pagination.paginatedData.map((emp) => {
                       const cfg = STATUS_CONFIG[emp.status];
                       return (
                         <tr
@@ -297,6 +305,9 @@ export function EmployeeListPage() {
                           <td className="px-4 py-3 font-medium text-primary">{emp.employeeId}</td>
                           <td className="px-4 py-3 font-medium">{getFullName(emp)}</td>
                           <td className="px-4 py-3 text-muted-foreground">{emp.department}</td>
+                          <td className="px-4 py-3">
+                            <Badge variant="secondary" className="text-[10px] px-1.5 py-0">{emp.unit}</Badge>
+                          </td>
                           <td className="px-4 py-3 text-muted-foreground">{emp.position}</td>
                           <td className="px-4 py-3">
                             <Badge variant="secondary" className={cfg.className}>
@@ -316,6 +327,20 @@ export function EmployeeListPage() {
                 </tbody>
               </table>
             </div>
+            <div className="px-4 pb-4">
+              <TablePagination
+                page={pagination.page}
+                totalPages={pagination.totalPages}
+                totalRows={pagination.totalRows}
+                pageSize={pagination.pageSize}
+                isShowingAll={pagination.isShowingAll}
+                onFirst={pagination.goFirst}
+                onPrev={pagination.goPrev}
+                onNext={pagination.goNext}
+                onLast={pagination.goLast}
+                onToggleShowAll={pagination.toggleShowAll}
+              />
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -329,7 +354,7 @@ export function EmployeeListPage() {
             </CardContent>
           </Card>
         ) : (
-          filtered.map((emp) => {
+          pagination.paginatedData.map((emp) => {
             const cfg = STATUS_CONFIG[emp.status];
             return (
               <Card
@@ -359,6 +384,10 @@ export function EmployeeListPage() {
                       <span className="truncate">{emp.department}</span>
                     </div>
                     <div className="flex items-center gap-1.5 text-muted-foreground">
+                      <Layers className="size-3.5 shrink-0" />
+                      <span className="truncate">{emp.unit}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-muted-foreground">
                       <Mail className="size-3.5 shrink-0" />
                       <span className="truncate">{emp.email}</span>
                     </div>
@@ -378,6 +407,18 @@ export function EmployeeListPage() {
             );
           })
         )}
+        <TablePagination
+          page={pagination.page}
+          totalPages={pagination.totalPages}
+          totalRows={pagination.totalRows}
+          pageSize={pagination.pageSize}
+          isShowingAll={pagination.isShowingAll}
+          onFirst={pagination.goFirst}
+          onPrev={pagination.goPrev}
+          onNext={pagination.goNext}
+          onLast={pagination.goLast}
+          onToggleShowAll={pagination.toggleShowAll}
+        />
       </div>
     </div>
   );
